@@ -1,6 +1,7 @@
 package com.disney.demo.controllers;
 
 import com.disney.demo.models.entities.Character;
+import com.disney.demo.models.views.CharacterDTO;
 import com.disney.demo.services.CharacterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,23 +26,23 @@ public class CharacterController {
     CharacterService characterService;
 
     @GetMapping
-    public ResponseEntity<List<Character>> getAllCharacters(@RequestParam(value = "name", required = false, defaultValue = "") String name,
-                                                            @RequestParam(value = "age", required = false, defaultValue = "0") int age) {
+    public ResponseEntity<List<CharacterDTO>> getAllCharacters(@RequestParam(value = "name", required = false, defaultValue = "") String name,
+                                                               @RequestParam(value = "age", required = false, defaultValue = "0") int age) {
         return ResponseEntity.ok(characterService.getAllCharacters(name, age));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Character> getCharacterByid(@PathVariable("id") int characterId) {
+    public ResponseEntity<CharacterDTO> getCharacterByid(@PathVariable("id") int characterId) {
         return ResponseEntity.ok(characterService.getById(characterId));
     }
 
     @PostMapping
-    public ResponseEntity<Character> createCharacter(@RequestBody Character character) {
+    public ResponseEntity<CharacterDTO> createCharacter(@RequestBody Character character) {
         return ResponseEntity.ok(characterService.createCharacter(character));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Character> updateCharacter(@RequestBody Character character, @PathVariable("id") int characterId) {
+    public ResponseEntity<CharacterDTO> updateCharacter(@RequestBody Character character, @PathVariable("id") int characterId) {
         return ResponseEntity.ok(characterService.updateCharacter(character, characterId));
     }
 

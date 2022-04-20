@@ -1,6 +1,7 @@
 package com.disney.demo.services.impl;
 
 import com.disney.demo.models.entities.Character;
+import com.disney.demo.models.views.CharacterDTO;
 import com.disney.demo.repositorys.CharacterRepository;
 import com.disney.demo.services.CharacterService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -17,31 +19,55 @@ public class CharactersServiceImpl implements CharacterService {
     CharacterRepository characterRepository;
 
     @Override
-    public List<Character> getAllCharacters(String name, int age) {
-        if (!name.isBlank() && age > 0) {
-            return characterRepository.findByNameLikeAndAgeGreaterThanEqual(name, age);
-        } else if (!name.isBlank()) {
-            return characterRepository.findByNameLike(name);
+    public List<CharacterDTO> getAllCharacters(String name, int age) {
+        List<Character> characters = new ArrayList<>();
+        List<CharacterDTO> charactersDTO = new ArrayList<>();
+        if (!name.equals("") && age > 0) {
+            characters = characterRepository.findByNameLikeAndAgeGreaterThanEqual(name, age);
+        } else if (!name.equals("")) {
+            characters = characterRepository.findByNameLike(name);
         } else if (age > 0) {
-            return characterRepository.findByAgeGreaterThanEqual(age);
+            characters = characterRepository.findByAgeGreaterThanEqual(age);
         } else
-            return characterRepository.findAll();
+            characters = characterRepository.findAll();
+
+        characters.forEach(character -> {
+            charactersDTO.add(
+                    CharacterDTO.builder()
+                            .name(character.getName())
+                            .age(character.getAge())
+                            .movies(character.getPeliculas())
+                            .build()
+            );
+        });
+
+        return charactersDTO;
     }
 
     @Override
-    public Character getById(int characterId) {
-        return characterRepository.findById(characterId).orElseThrow(
+    public CharacterDTO getById(int characterId) {
+        Character character = characterRepository.findById(characterId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         String.format("characterId %d doesnt exists", characterId)));
+        return CharacterDTO.builder()
+                .name(character.getName())
+                .age(character.getAge())
+                .movies(character.getPeliculas())
+                .build();
     }
 
     @Override
-    public Character createCharacter(Character character) {
-        return characterRepository.save(character);
+    public CharacterDTO createCharacter(Character character) {
+        characterRepository.save(character);
+        return CharacterDTO.builder()
+                .name(character.getName())
+                .age(character.getAge())
+                .movies(character.getPeliculas())
+                .build();
     }
 
     @Override
-    public Character updateCharacter(Character character, int characterId) {
+    public CharacterDTO updateCharacter(Character character, int characterId) {
         characterRepository.findById(characterId).ifPresentOrElse(
                 oldCharacter -> {
                     oldCharacter.setPeliculas(character.getPeliculas());
@@ -55,7 +81,11 @@ public class CharactersServiceImpl implements CharacterService {
                             String.format("characterId %d doesnt exists", characterId));
                 }
         );
-        return character;
+        return CharacterDTO.builder()
+                .name(character.getName())
+                .age(character.getAge())
+                .movies(character.getPeliculas())
+                .build();
     }
 
     @Override

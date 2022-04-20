@@ -1,19 +1,20 @@
 package com.disney.demo.services;
 
 import com.disney.demo.models.entities.Character;
+import com.disney.demo.models.views.CharacterDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 
 public interface CharacterService {
-    List<Character> getAllCharacters(String name, int age);
+    List<CharacterDTO> getAllCharacters(String name, int age);
 
-    Character getById(int id);
+    CharacterDTO getById(int id);
 
-    Character createCharacter(Character character);
+    CharacterDTO createCharacter(Character character);
 
-    Character updateCharacter(Character character, int characterId);
+    CharacterDTO updateCharacter(Character character, int characterId);
 
     void deleteCharacter(int characterId);
 }
